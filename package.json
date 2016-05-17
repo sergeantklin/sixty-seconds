@@ -1,13 +1,13 @@
 {
-  "name": "SixtySeconds",
+  "name": "sixty-seconds",
   "version": "1.0.0",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {},
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "description": "SixtySeconds",
-  "main": "server.js",
+  "main": "index.js",
   "dependencies": {
     "body-parser": "^1.14.0",
     "compression": "^1.5.2",

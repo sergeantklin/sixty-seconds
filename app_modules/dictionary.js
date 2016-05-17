@@ -1,5 +1,5 @@
 module.exports = {	
 	messages:{
-		canNotAnswer
+		canNotAnswer:'canNotAnswer'
 	}
 };

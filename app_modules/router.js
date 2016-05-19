@@ -13,6 +13,7 @@ var
 	startGameTemplate = fs.readFileSync('app_modules/templates/startGame.html', 'utf8'),
 	adminTemplate = fs.readFileSync('app_modules/templates/admin.html', 'utf8'),
 	userTemplate = fs.readFileSync('app_modules/templates/user.html', 'utf8'),
+	answerStateTemplate = fs.readFileSync('app_modules/templates/answerState.html', 'utf8'),
 	answerTemplate = fs.readFileSync('app_modules/templates/answer.html', 'utf8');
 
 
@@ -83,7 +84,8 @@ module.exports = function(app) {
 				game:game,
 				question:game.getCurrentQuestion(),
 				user:users.getUserById(req.session.userId),
-				session:req.session	
+				session:req.session,
+				answerState:req.query.answerState
 		}
 		return state;
 	}
@@ -103,7 +105,9 @@ module.exports = function(app) {
 		res.end();
 	});
 	app.get('/results', checkUser, function (req, res, next) {
-		res.send(_.template(resultsTemplate)(getState(req)));
+		var state = getState(req);
+		state.results = game.getResults(users.getUsers())
+		res.send(_.template(resultsTemplate)(state));
 		res.end();
 	});
 	app.get('/question', checkAdminGame, function (req, res, next) {
@@ -118,15 +122,20 @@ module.exports = function(app) {
 		res.send(_.template(userTemplate)(getState(req)));
 		res.end();
 	});
+	app.get('/answerState', checkUserGame, function (req, res, next) {
+		res.send(_.template(answerStateTemplate)(getState(req)));
+		res.end();
+	});
 	// POSTS
 	app.post('/question', checkAdminGame, function (req, res, next) {
 		game.startQuestion(req.body);
+		console.log(game.getResults(users.getUsers()))
 		redirectTo(res,'/results');
 		res.end();
 	});	
-	app.post('/answer', checkUserQuestion, function (req, res, next) {
-		game.recieveAnswer(res.session.userId, req.body);
-		redirectTo(res,'/results');
+	app.post('/answer', checkUserGame, function (req, res, next) {
+		var answerState = game.recieveAnswer(req.session.userId, req.body);
+		redirectTo(res,'/answerState?answerState='+answerState);
 		res.end();
 	});
 	app.post('/start', checkAdmin, function (req, res, next) {
@@ -134,6 +143,7 @@ module.exports = function(app) {
 		redirectTo(res,'/question');
 		res.end();
 	});
+	
 	app.post('/login', function(req, res, next){
 		var user = users.loginUser(req.body, req.session);
 		if(user){

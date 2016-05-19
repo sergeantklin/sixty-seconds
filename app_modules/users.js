@@ -9,6 +9,9 @@ var users = [{
 	password:'123',
 	isAdmin:true
 }]
+var getUsers = function(){
+	return users;
+};
 var getUserBySession = function(session) {
 	return _.findWhere(users,{
 		id:session.userId
@@ -83,5 +86,6 @@ var checkAdmin = function(req, res, next) {
 module.exports = {
 	getUserBySession:getUserBySession,
 	getUserById:getUserById,
-	loginUser:loginUser
+	loginUser:loginUser,
+	getUsers:getUsers
 }

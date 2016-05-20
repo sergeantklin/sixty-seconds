@@ -1,14 +1,15 @@
 <% if(question){%>
+	<h1>Answer the question</h1>
 	<div><%=question.timeLeft%></div>
 	<div><%=question.content%></div>
 	<form action='answer' method='post' accept-charset='UTF-8'>
 		<fieldset >
-		<legend>Your answer</legend>
-		<label for='questionId' >questionId*:</label>
 		<input style="display:none" type='text' name='questionId' id='questionId' maxlength="50"  value="<%=question.id%>"/>
-		<label for='answer' >Answer*:</label>
-		<input type='text' name='answer' id='answer' maxlength="50" />
-		<input type='submit' name='Submit' value='Submit' />
+		<div class="form-group">
+			<label for='answer' >Answer*:</label>
+			<input class="form-control" type='text' name='answer' id='answer' maxlength="50" autofocus />
+		</div>
+		<button class="form-control" type='submit' name='Submit' class="btn btn-default">Submit</button>
 		</fieldset>
 	</form>
 <% }else{%>

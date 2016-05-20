@@ -5,6 +5,7 @@ var fs = require('fs');
 var users = require('./users');
 var game = require('./game');
 var 
+	headTemplate = fs.readFileSync('app_modules/templates/head.html', 'utf8'),
 	questionTemplate = fs.readFileSync('app_modules/templates/question.html', 'utf8'),
 	resultsTemplate = fs.readFileSync('app_modules/templates/results.html', 'utf8'),
 	loginTemplate = fs.readFileSync('app_modules/templates/login.html', 'utf8'),
@@ -13,8 +14,7 @@ var
 	startGameTemplate = fs.readFileSync('app_modules/templates/startGame.html', 'utf8'),
 	adminTemplate = fs.readFileSync('app_modules/templates/admin.html', 'utf8'),
 	userTemplate = fs.readFileSync('app_modules/templates/user.html', 'utf8'),
-	answerStateTemplate = fs.readFileSync('app_modules/templates/answerState.html', 'utf8'),
-	answerTemplate = fs.readFileSync('app_modules/templates/answer.html', 'utf8');
+	answerStateTemplate = fs.readFileSync('app_modules/templates/answerState.html', 'utf8');
 
 
 
@@ -24,6 +24,10 @@ module.exports = function(app) {
 		extended: true
 	})); 
 
+	function getTemplate (template, params){
+		return headTemplate+_.template(template)(params)+'</div></body></html>'
+	}
+	
 	function checkRights(req, res, next, isAdmin, isGame, isQuestion){
 		if(req.session.userId&&(!isAdmin||req.session.isAdmin)){
 			if(!isGame||game.isStarted()){
@@ -44,16 +48,16 @@ module.exports = function(app) {
 				// игра не начата
 				if(req.session.isAdmin){
 					// админу показываем стартовую страницу
-					res.send(_.template(startGameTemplate)());
+					res.send(getTemplate(startGameTemplate));
 					res.end();
 				}else{
 					// юзеру показываем сообщение
-					res.send(_.template(gameNotStartedTemplate)());
+					res.send(getTemplate(gameNotStartedTemplate));
 					res.end();
 				}
 			}
 		} else{
-			res.send(_.template(loginTemplate)());
+			res.send(getTemplate(loginTemplate));
 			res.end();
 		};
 	}	
@@ -101,35 +105,35 @@ module.exports = function(app) {
 				
 	});	
 	app.get('/login', function(req, res, next){
-		res.send(_.template(loginTemplate)());
+		res.send(getTemplate(loginTemplate));
 		res.end();
 	});
 	app.get('/results', checkUser, function (req, res, next) {
 		var state = getState(req);
 		state.results = game.getResults(users.getUsers())
-		res.send(_.template(resultsTemplate)(state));
+		res.send(getTemplate(resultsTemplate,state));
 		res.end();
 	});
 	app.get('/question', checkAdminGame, function (req, res, next) {
-		res.send(_.template(questionTemplate)(getState(req)));
+		res.send(getTemplate(questionTemplate,getState(req)));
 		res.end();
 	});
 	app.get('/admin', checkAdminGame, function (req, res, next) {
-		res.send(_.template(adminTemplate)(getState(req)));
+		res.send(getTemplate(adminTemplate,getState(req)));
 		res.end();
 	});
 	app.get('/user', checkUserGame, function (req, res, next) {
-		res.send(_.template(userTemplate)(getState(req)));
+		res.send(getTemplate(userTemplate,getState(req)));
 		res.end();
 	});
 	app.get('/answerState', checkUserGame, function (req, res, next) {
-		res.send(_.template(answerStateTemplate)(getState(req)));
+		res.send(getTemplate(answerStateTemplate,getState(req)));
 		res.end();
 	});
 	// POSTS
 	app.post('/question', checkAdminGame, function (req, res, next) {
 		game.startQuestion(req.body);
-		console.log(game.getResults(users.getUsers()))
+		//console.log(game.getResults(users.getUsers()))
 		redirectTo(res,'/results');
 		res.end();
 	});	
@@ -152,7 +156,7 @@ module.exports = function(app) {
 			redirectTo(res,'/');
 			
 		} else{
-			res.send(_.template(loginTemplate)());
+			res.send(getTemplate(loginTemplate));
 		}
 		res.end();
 	});

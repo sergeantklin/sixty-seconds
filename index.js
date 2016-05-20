@@ -1,9 +1,9 @@
 
 var express = require('express');
-var parseurl = require('parseurl');
+//var parseurl = require('parseurl');
 var session = require('express-session');
 var app = express();
- 
+app.use(express.static('public')); 
 app.use(session({
   secret: 'keyboard cat',
   resave: false,

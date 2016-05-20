@@ -1,10 +1,10 @@
+	<h1>Start new game</h1>
 	<form action='start' method='post' accept-charset='UTF-8'>
 		<fieldset >
-		<legend>New game</legend>
-		<label for='questions' >questions count*:</label>
-		<input type='text' name='questions' id='questions' maxlength="2" value="10"/>
-		 
-		<input type='submit' name='Submit' value='Submit' />
-		 
+		<div class="form-group">
+			<label for='questions' >questions count*:</label>
+			<input class="form-control" type='text' name='questions' id='questions' maxlength="2" value="10" autofocus />
+		</div>
+		<button class="form-control" type='submit' name='Submit' class="btn btn-default">Submit</button>		 
 		</fieldset>
 	</form>

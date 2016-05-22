@@ -1,7 +1,60 @@
-	<h1>Results</h1>
-<% _.each(results,function(userResult){%>
+<h1>Results</h1>
+<table class="table table-bordered table-striped">
+	<tr>
+		<th>USERNAME</th>
+		<% for(var i=0,ii=game.getQuestionsCount();i<ii;i++){%>
+			<th><%= i%></th>
+		<%}%>
+			
+	</tr>
+<% _.each(results,function(userResult, userArrayPosition){%>
+	<tr>
+		<td><%= users.getUsers()[userArrayPosition].username%>
 	<% _.each(userResult,function(userAnswer){%>
-		<div><%= userAnswer.result%></div>
-		
+		<td>
+			<% switch (userAnswer.result){case dict.answerResults.waiting:%>
+				<span class="answer-icon glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+			<% break; case dict.answerResults.noAnswer:%>
+				<p></p>
+			<% break; case dict.answerResults.right:%>
+				<span class="answer-icon glyphicon glyphicon-ok"></span>
+			<% break; case dict.answerResults.wrong:%>
+				<span class="answer-icon glyphicon glyphicon-remove"></span>
+			<%}%>
+		</td>
 	<%})%>	
+	</tr>
 <%})%>
+</table>
+<!-- Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="detailsModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body" id="detailsModalBody">
+       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success"><span class="answer-icon glyphicon glyphicon-ok"></span>&nbsp;Right</button>
+        <button type="button" class="btn btn-danger"><span class="answer-icon glyphicon glyphicon-remove"></span>&nbsp;Wrong</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+	$( document ).ready(function(){
+		$('#detailsModal').modal({})
+		$('#detailsModalBody').empty();
+		$('.answer-icon').on('click',function(){
+			$('#detailsModalBody').empty();
+			$('#detailsModal').modal({});
+			
+		})
+	})
+</script>

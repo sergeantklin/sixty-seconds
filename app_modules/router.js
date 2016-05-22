@@ -89,6 +89,7 @@ module.exports = function(app) {
 				question:game.getCurrentQuestion(),
 				user:users.getUserById(req.session.userId),
 				session:req.session,
+				dict:dict,
 				answerState:req.query.answerState
 		}
 		return state;
@@ -161,35 +162,5 @@ module.exports = function(app) {
 		res.end();
 	});
 	return;
-	//app.use(compress()); 
-
-	
-	
-	
-    app.post('/logoff', auth.checkUser, function(req, res) {require('./logoff')(req, res,models)});
-    app.post('/getMyUser', auth.checkUser, function(req, res) {require('./getMyUser')(req, res,models)});
-    app.post('/createUser', auth.checkAdmin, function(req, res) {require('./createUser')(req, res,models, game)});
-    app.post('/newGame', auth.checkAdmin, function(req, res) {require('./newGame')(req, res,models, game)});
-    app.post('/postState', auth.checkAdmin, function(req, res) {require('./postState')(req, res,models, game)});
-    app.post('/getAnswersCount', auth.checkAdmin, function(req, res) {require('./getAnswersCount')(req, res,models, game)});
-    app.post('/postAnswer', auth.checkUser, function(req, res) {require('./postAnswer')(req, res,models, game)});
-    app.post('/setInGame', auth.checkAdmin, function(req, res) {require('./setInGame')(req, res, models, game)});
-    app.post('/confirmAnswer', auth.checkAdmin, function(req, res) {require('./confirmAnswer')(req, res, models, game)});
-    app.post('/getQuestionsCount', auth.checkAdmin, function(req, res) {require('./getQuestionsCount')(req, res, models, game)});
-    app.post('/getNewAnswers', auth.checkAdmin, function(req, res) {require('./getNewAnswers')(req, res, models, game)});
-    app.post('/getNewAnswersCount', auth.checkAdmin, function(req, res) {require('./getNewAnswersCount')(req, res, models, game)});
-    app.post('/getState', auth.checkUser, function(req, res) {require('./getState')(req, res, models, game)});
-    app.post('/getResults', auth.checkUser, function(req, res) {require('./getResults')(req, res, models, game)});
-    app.post('/getUsers', auth.checkAdmin, function(req, res) {require('./getUsers')(req, res, models, game)});
-    //app.post('/getCurrentAdminGame', /*auth.checkUser,*/ function(req, res) {require('./getCurrentAdminGame')(req, res,models, game)});
-	app.post('/login', auth.loginUser);
-	app.post('/register', auth.registerUser);
-	// страница пользователя
-	app.get('/user', function(req, res) {
-		res.send("3");
-		return;
-		if(!req.user){return res.redirect('/login')}
-		res.send(req.user);
-	});	
 	
 };

@@ -76,6 +76,7 @@ var startGame = function(params){
 module.exports = {
 	isStarted:function(){return isStarted},
 	hasQuestion:function(){return currentQuestion},
+	getQuestionsCount:function(){return questionsCount},
 	getResults:getResults,
 	getCurrentQuestion:getCurrentQuestion,
 	startGame:startGame,

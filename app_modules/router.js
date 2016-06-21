@@ -24,11 +24,19 @@ module.exports = function(app) {
 		extended: true
 	})); 
 
+	function clearHeaders(res){
+		res.setHeader('Cache-Control','no-cache');
+		res.setHeader('Pragma','no-cache');
+		res.setHeader('Expires','-1');
+		res.setHeader('Cache-Control','no-cache, no-store');
+	}
+	
 	function getTemplate (template, params){
 		return headTemplate+_.template(template)(params)+'</div></body></html>'
 	}
 	
 	function checkRights(req, res, next, isAdmin, isGame, isQuestion){
+		clearHeaders(res);
 		if(req.session.userId&&(!isAdmin||req.session.isAdmin)){
 			if(!isGame||game.isStarted()){
 				if(!isQuestion||game.getCurrentQuestion()){
@@ -115,6 +123,10 @@ module.exports = function(app) {
 		res.send(getTemplate(resultsTemplate,state));
 		res.end();
 	});
+	app.get('/game', checkAdminGame, function (req, res, next) {
+		res.send(getTemplate(startGameTemplate));
+		res.end();
+	});
 	app.get('/question', checkAdminGame, function (req, res, next) {
 		res.send(getTemplate(questionTemplate,getState(req)));
 		res.end();
@@ -131,10 +143,19 @@ module.exports = function(app) {
 		res.send(getTemplate(answerStateTemplate,getState(req)));
 		res.end();
 	});
+	app.get('/answer', checkAdminGame, function (req, res, next) {
+		res.send(game.getAnswer(req.query.questionId, req.query.userId));
+		res.end();
+		
+	});
 	// POSTS
+	app.post('/result', checkAdminGame, function (req, res, next) {
+		game.setResult(req.body);
+		res.send({});
+		res.end();
+	});	
 	app.post('/question', checkAdminGame, function (req, res, next) {
 		game.startQuestion(req.body);
-		//console.log(game.getResults(users.getUsers()))
 		redirectTo(res,'/results');
 		res.end();
 	});	
@@ -142,6 +163,7 @@ module.exports = function(app) {
 		var answerState = game.recieveAnswer(req.session.userId, req.body);
 		redirectTo(res,'/answerState?answerState='+answerState);
 		res.end();
+		
 	});
 	app.post('/start', checkAdmin, function (req, res, next) {
 		game.startGame(req.body);
@@ -152,6 +174,7 @@ module.exports = function(app) {
 	app.post('/login', function(req, res, next){
 		var user = users.loginUser(req.body, req.session);
 		if(user){
+			
 			req.session.userId = user.id;
 			req.session.isAdmin = user.isAdmin;
 			redirectTo(res,'/');

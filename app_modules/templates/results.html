@@ -1,9 +1,9 @@
 <h1>Results</h1>
-<table class="table table-bordered table-striped">
+<table class="table table-bordered table-striped result">
 	<tr>
 		<th>USERNAME</th>
 		<% for(var i=0,ii=game.getQuestionsCount();i<ii;i++){%>
-			<th><%= i%></th>
+			<th class="result__header-cell" ><%= i%></th>
 		<%}%>
 			
 	</tr>
@@ -11,7 +11,7 @@
 	<tr>
 		<td><%= users.getUsers()[userArrayPosition].username%>
 	<% _.each(userResult,function(userAnswer){%>
-		<td>
+		<td class="result__cell" data-questionid="<%=isAdmin&&userAnswer.questionId%>" data-userid="<%=isAdmin&&userAnswer.userId%>">
 			<% switch (userAnswer.result){case dict.answerResults.waiting:%>
 				<span class="answer-icon glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
 			<% break; case dict.answerResults.noAnswer:%>
@@ -39,8 +39,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-success"><span class="answer-icon glyphicon glyphicon-ok"></span>&nbsp;Right</button>
-        <button type="button" class="btn btn-danger"><span class="answer-icon glyphicon glyphicon-remove"></span>&nbsp;Wrong</button>
+        <button type="button" class="btn btn-success modal-btn-result" data-result="right"><span class="answer-icon glyphicon glyphicon-ok"></span>&nbsp;Right</button>
+        <button type="button" class="btn btn-danger modal-btn-result" data-result="wrong"><span class="answer-icon glyphicon glyphicon-remove"></span>&nbsp;Wrong</button>
       </div>
     </div>
   </div>
@@ -48,13 +48,46 @@
 
 
 <script>
+	var $request;
+	var recievedAnswer;
 	$( document ).ready(function(){
-		$('#detailsModal').modal({})
-		$('#detailsModalBody').empty();
-		$('.answer-icon').on('click',function(){
-			$('#detailsModalBody').empty();
+		$('.result__cell').on('click',function(event){
+			$request&&$request.abort();
+			var $target = $(event.currentTarget);
+			var data = $target.data();
+			if(!data.questionid){
+				return;
+			}
+			$('#detailsModalBody').html('Please wait...');
 			$('#detailsModal').modal({});
+			$request = $.get('/answer',{
+				userId:data.userid,
+				questionId:data.questionid
+			},onAnswerRecieve, 'json');
 			
-		})
-	})
+		});
+		$('.modal-btn-result').on('click',function(event){
+			$request&&$request.abort();
+			var $target = $(event.currentTarget);
+			var data = $target.data();
+			$request = $.post('/result',{
+				userId:recievedAnswer.userId,
+				questionId:recievedAnswer.questionId,
+				result:data.result
+			},onResultRecieve, 'json');
+		});
+		
+	});
+	function onAnswerRecieve(data){
+		recievedAnswer = data;
+		$('#detailsModalBody').html($('.result__cell[data-questionid="'+data.questionId+'"][data-userid="'+data.userId+'"]').clone().html()+ ' '+data.answer);		
+	};
+	function onResultRecieve(data){
+		location.reload();		
+	};
+	setInterval(function(){
+		if(!($(".modal").data('bs.modal') || {}).isShown){
+			location.reload();
+		}
+	},5000)
 </script>

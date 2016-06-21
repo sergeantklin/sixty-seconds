@@ -1,5 +1,5 @@
 	<h1>Start new game</h1>
-	<form action='start' method='post' accept-charset='UTF-8'>
+	<form action='start' method='post' accept-charset='UTF-8' autocomplete='off'>
 		<fieldset >
 		<div class="form-group">
 			<label for='questions' >questions count*:</label>
@@ -8,3 +8,10 @@
 		<button class="form-control" type='submit' name='Submit' class="btn btn-default">Submit</button>		 
 		</fieldset>
 	</form>
+	
+<script>
+	// debug
+	$( document ).ready(function(){
+		//$('button').trigger('click');
+	})
+</script>

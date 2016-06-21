@@ -10,4 +10,5 @@ module.exports = {
 		right:'right',
 		wrong:'wrong',
 	}
+	
 };

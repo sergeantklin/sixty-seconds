@@ -9,6 +9,7 @@ var users = [{
 	password:'123',
 	isAdmin:true
 }]
+
 var getUsers = function(){
 	return users;
 };

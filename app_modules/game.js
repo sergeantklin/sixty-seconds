@@ -6,6 +6,23 @@ var isStarted = false;
 var currentQuestion;
 var questionTimeout;
 
+var setResult = function(params){
+	for(var i=0; i<questions.length; i++){
+		var question = questions[i];
+		if(question.id == params.questionId){
+			question.answers[params.userId].result=params.result;
+		}
+	}	
+}
+var getAnswer = function(questionId,userId){
+	for(var i=0; i<questions.length; i++){
+		var question = questions[i];
+		if(question.id == questionId){
+			return question.answers[userId];
+		}
+	}	
+	return {};
+}
 var getResults = function(users){
 	var results = [];
 	_.each(users,function(user){
@@ -40,6 +57,8 @@ var recieveAnswer = function(userId, answer){
 			return dict.answerStates.duplicated;
 		} else{
 			currentQuestion.answers[userId] = {
+				questionId:questionId,
+				userId:userId,
 				answer:answer.answer,
 				result:dict.answerResults.waiting
 			}
@@ -55,7 +74,7 @@ var startQuestion = function(params){
 	currentQuestion = {
 		id:currentDate.getTime(),
 		content:params.question,
-		timeout:params.timeout*10000,
+		timeout:params.timeout*1000,
 		startTime:currentDate,
 		answers:{}
 	};
@@ -65,12 +84,13 @@ var startQuestion = function(params){
 	},currentQuestion.timeout);
 }
 var startGame = function(params){
-	if(!isStarted){
-		isStarted = true;
-		currentQuestion = null;
-		questions = [];
-		questionsCount = params.questions;
-	}
+	isStarted = true;
+	currentQuestion = null;
+	questions = [];
+	questionsCount = params.questions;
+	// debug
+	//startQuestion({question:'asd', timeout:100});
+	//recieveAnswer(1,{questionId:currentQuestion.id,answer:'qeqrt'})
 }
 
 module.exports = {
@@ -83,5 +103,7 @@ module.exports = {
 	startQuestion:startQuestion,
 	stopQuestion:stopQuestion,
 	recieveAnswer:recieveAnswer,
+	getAnswer:getAnswer,
+	setResult:setResult
 	
 }
